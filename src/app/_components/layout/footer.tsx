@@ -74,7 +74,7 @@ export default function Footer({ newsletterAction }: FooterProps = {}) {
   const id = useId();
 
   return (
-    <footer className="w-full overflow-hidden bg-[#F5F3EE] pt-16 text-[#3B2923] sm:pt-20 lg:pt-24">
+    <footer className="w-full overflow-hidden border-t border-[#DAD6CE] bg-[#F5F3EE] pt-16 text-[#3B2923] sm:pt-20 lg:pt-24">
       <div className="px-6 sm:px-10 lg:px-16 xl:px-20">
         <div className="grid grid-cols-1 gap-x-12 gap-y-12 md:grid-cols-2 lg:grid-cols-[1.65fr_1fr_1.1fr_0.85fr] lg:gap-x-16 xl:gap-x-24">
           <section aria-labelledby={`${id}-newsletter`} className="max-w-md">
@@ -207,6 +207,7 @@ export default function Footer({ newsletterAction }: FooterProps = {}) {
                   rel="noopener noreferrer"
                   className="flex size-11 items-center justify-center rounded-full transition-opacity hover:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
                 >
+                  <span className="sr-only">{social.name}</span>
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 24 24"
@@ -224,13 +225,13 @@ export default function Footer({ newsletterAction }: FooterProps = {}) {
 
       <div className="mx-auto mt-[clamp(3rem,6vw,7rem)] px-3 pb-4 sm:px-5 sm:pb-6 lg:px-8 lg:pb-8">
         {/* Crop the asset's transparent padding, preserving the original wordmark and underline. */}
-        <div className="relative aspect-[1463/443] w-full overflow-hidden">
+        <div className="relative mx-auto aspect-[1463/443] w-[clamp(9.28rem,55.68vw,58%)] max-w-full overflow-hidden">
           <Image
             src="/logo-black.png"
             alt="Kicks"
             width={2172}
             height={724}
-            sizes="150vw"
+            sizes="87vw"
             className="absolute -left-[24.27%] -top-[36.57%] h-auto w-[148.46%] max-w-none"
           />
         </div>
