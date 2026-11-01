@@ -1,0 +1,50 @@
+{
+  // Biome as the default formatter
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+
+  // Biome formatting for supported languages
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome",
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome",
+  },
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome",
+  },
+
+  // Organize imports using Biome
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "explicit",
+  },
+
+  // General editor preferences
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+
+  // TypeScript preferences
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+
+  // Tailwind CSS IntelliSense
+  "editor.quickSuggestions": {
+    "strings": "on",
+  },
+}
