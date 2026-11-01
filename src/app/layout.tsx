@@ -36,6 +36,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 				inter.variable,
 			)}
 		>
+			<head>
+				<meta name="apple-mobile-web-app-title" content="Kicks" />
+			</head>
 			<body className="min-h-dvh flex flex-col">
 				<Header />
 				{children}
