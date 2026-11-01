@@ -1,10 +1,10 @@
 import { featuredDrops } from "./featured-drops-data";
+import type { ProductImages } from "./product-images";
 
-export type CollectionProduct = {
+export type CollectionProduct = ProductImages & {
   id: string;
   brand: string;
   name: string;
-  image: string;
   price: number;
   href: string;
 };

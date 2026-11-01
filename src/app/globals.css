@@ -128,3 +128,108 @@
     @apply font-sans;
   }
 }
+/* A shared frame keeps both product angles stable, including carousel clones. */
+.product-images img {
+  transition:
+    opacity 400ms ease,
+    transform 500ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  :is(a, button):hover .product-images-ready .product-secondary {
+    opacity: 1;
+  }
+  :is(a, button):hover .product-images-ready .product-primary {
+    opacity: 0;
+  }
+}
+:is(a, button):focus-visible .product-images-ready .product-secondary {
+  opacity: 1;
+}
+:is(a, button):focus-visible .product-images-ready .product-primary {
+  opacity: 0;
+}
+
+.kicks-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: #f5f3ee;
+  pointer-events: none;
+  transition:
+    opacity 400ms ease,
+    visibility 400ms;
+  /* Fail open if JavaScript cannot hydrate. */
+  animation: preloader-fallback 0s 8s forwards;
+}
+.kicks-preloader[data-ready="true"] {
+  opacity: 0;
+  visibility: hidden;
+}
+.preloader-line {
+  width: 100px;
+  height: 1px;
+  background: #17171520;
+  overflow: hidden;
+}
+.preloader-line::after {
+  content: "";
+  display: block;
+  width: 45%;
+  height: 100%;
+  background: #171715;
+  animation: loading-line 1.2s ease-in-out infinite;
+}
+@keyframes loading-line {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(325%);
+  }
+}
+@keyframes preloader-fallback {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Concave shoulders extend outward from a continuous ivory header surface. */
+.kicks-header {
+  isolation: isolate;
+}
+.kicks-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -20px;
+  z-index: -1;
+  background: #f5f3ee;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 0H1440V100Q1440 78 1416 78H24Q0 78 0 100Z'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+.kicks-header[data-solid="true"]::before {
+  opacity: 1;
+}
+.reel-dialog::backdrop {
+  background: rgb(0 0 0 / 82%);
+  backdrop-filter: blur(10px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-images img,
+  .kicks-header::before,
+  .kicks-preloader {
+    transition: none;
+  }
+  .preloader-line::after {
+    animation: none;
+    width: 100%;
+  }
+}

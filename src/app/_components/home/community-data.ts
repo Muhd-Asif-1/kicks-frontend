@@ -2,64 +2,55 @@ export type CommunityPost = {
   id: string;
   image: string;
   alt: string;
-  format: "portrait" | "square";
-  href: string;
-};
+} & ({ type: "image"; href: string } | { type: "video"; video: string });
 
-// Placeholder profile. Replace this and each post's href with Kicks' official URLs.
-export const communityProfile = {
-  handle: "@KICKS",
-  href: "https://www.instagram.com/kicks/",
-};
+// Placeholder profile; replace with the official Kicks destination before launch.
+export const communityProfile = { handle: "@KICKS", href: "https://www.instagram.com/kicks/" };
 
-// Temporary lifestyle photography from Unsplash; source photo IDs are listed per post.
+// Local mock content, deliberately independent of any Instagram API.
+// Videos: Mixkit 4893 (street steps), 15059 (tying sneakers), trimmed silent previews.
+// Existing lifestyle photographs: Unsplash. See public/media-sources.md.
 export const communityPosts: readonly CommunityPost[] = [
   {
-    // photo-1520975954732-35dd22299614
-    id: "rooftop-style",
-    image: "/images/community/rooftop-style.jpg",
-    alt: "Black leather jacket and sunglasses styled on a brick city rooftop",
-    format: "portrait",
-    href: communityProfile.href,
+    id: "street-steps",
+    type: "video",
+    video: "/videos/community/street-steps.mp4",
+    image: "/images/community/street-steps.jpg",
+    alt: "Street steps — sneakers in motion down a sunlit alley",
   },
   {
-    // photo-1514989940723-e8e51635b782
-    id: "air-max-on-the-street",
+    id: "air-max",
+    type: "image",
     image: "/images/community/air-max-on-the-street.jpg",
-    alt: "Orange and yellow Air Max sneakers worn with dark denim on a city pavement",
-    format: "square",
+    alt: "Orange and yellow Air Max on the pavement",
     href: communityProfile.href,
   },
   {
-    // photo-1503342217505-b0a15ec3261c
-    id: "pink-wall-style",
-    image: "/images/community/pink-wall-style.jpg",
-    alt: "Black graphic tee, light denim and tinted sunglasses against a pink street wall",
-    format: "portrait",
+    id: "lace-up",
+    type: "video",
+    video: "/videos/community/lace-up.mp4",
+    image: "/images/community/lace-up.jpg",
+    alt: "Lace up — getting ready for the next run",
+  },
+  {
+    id: "rooftop",
+    type: "image",
+    image: "/images/community/rooftop-style.jpg",
+    alt: "Leather and denim on a city rooftop",
     href: communityProfile.href,
   },
   {
-    // photo-1512990414788-d97cb4a25db3
     id: "green-vans",
+    type: "image",
     image: "/images/community/green-vans.jpg",
-    alt: "Green Vans sneakers worn with cuffed jeans against a weathered green door",
-    format: "square",
+    alt: "Green Vans and cuffed denim",
     href: communityProfile.href,
   },
   {
-    // photo-1529810313688-44ea1c2d81d3
-    id: "rainy-day-kicks",
+    id: "rainy-day",
+    type: "image",
     image: "/images/community/rainy-day-kicks.jpg",
-    alt: "Olive high-top sneakers splashing through a puddle on a rainy street",
-    format: "portrait",
-    href: communityProfile.href,
-  },
-  {
-    // photo-1520639888713-7851133b1ed0
-    id: "lacing-up",
-    image: "/images/community/lacing-up.jpg",
-    alt: "Hands lacing brown leather boots with denim on an outdoor stone step",
-    format: "square",
+    alt: "High tops making a splash on a rainy street",
     href: communityProfile.href,
   },
 ];

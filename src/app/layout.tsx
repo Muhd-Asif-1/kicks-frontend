@@ -4,46 +4,48 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Footer from "./_components/layout/footer";
 import Header from "./_components/layout/header";
+import Preloader from "./_components/layout/preloader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-	title: "Kicks",
-	description: "Your favorite sneaker store",
+  title: "Kicks",
+  description: "Your favorite sneaker store",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-	return (
-		<html
-			lang="en"
-			className={cn(
-				"h-full",
-				"antialiased",
-				"suppressHydrationWarning",
-				geistSans.variable,
-				geistMono.variable,
-				"font-sans",
-				inter.variable,
-			)}
-		>
-			<head>
-				<meta name="apple-mobile-web-app-title" content="Kicks" />
-			</head>
-			<body className="min-h-dvh flex flex-col">
-				<Header />
-				{children}
-				<Footer />
-			</body>
-		</html>
-	);
+  return (
+    <html
+      lang="en"
+      className={cn(
+        "h-full",
+        "antialiased",
+        "suppressHydrationWarning",
+        geistSans.variable,
+        geistMono.variable,
+        "font-sans",
+        inter.variable,
+      )}
+    >
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Kicks" />
+      </head>
+      <body className="min-h-dvh flex flex-col">
+        <Preloader />
+        <Header />
+        {children}
+        <Footer />
+      </body>
+    </html>
+  );
 }

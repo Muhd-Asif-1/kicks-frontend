@@ -1,7 +1,7 @@
 "use client";
 
 import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
+import { motion, useAnimation, useReducedMotion } from "motion/react";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
@@ -32,13 +32,14 @@ const CART_VARIANTS: Variants = {
 const CartIcon = forwardRef<CartIconHandle, CartIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
+    const reduceMotion = useReducedMotion();
     const isControlledRef = useRef(false);
 
     useImperativeHandle(ref, () => {
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start("animate"),
+        startAnimation: () => controls.start(reduceMotion ? "normal" : "animate"),
         stopAnimation: () => controls.start("normal"),
       };
     });
@@ -48,10 +49,10 @@ const CartIcon = forwardRef<CartIconHandle, CartIconProps>(
         if (isControlledRef.current) {
           onMouseEnter?.(e);
         } else {
-          controls.start("animate");
+          controls.start(reduceMotion ? "normal" : "animate");
         }
       },
-      [controls, onMouseEnter]
+      [controls, onMouseEnter, reduceMotion],
     );
 
     const handleMouseLeave = useCallback(
@@ -62,9 +63,10 @@ const CartIcon = forwardRef<CartIconHandle, CartIconProps>(
           controls.start("normal");
         }
       },
-      [controls, onMouseLeave]
+      [controls, onMouseLeave],
     );
     return (
+      // biome-ignore lint/a11y/noStaticElementInteractions: Decorative hover animation; the parent owns the accessible action.
       <div
         className={cn(className)}
         onMouseEnter={handleMouseEnter}
@@ -89,7 +91,7 @@ const CartIcon = forwardRef<CartIconHandle, CartIconProps>(
         </motion.svg>
       </div>
     );
-  }
+  },
 );
 
 CartIcon.displayName = "CartIcon";

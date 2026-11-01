@@ -1,12 +1,13 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, ArrowUpRight, Heart, Pause, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play } from "lucide-react";
 import { motion } from "motion/react";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { HeartIcon } from "@/components/ui/heart";
 import { cn } from "@/lib/utils";
 import { type FeaturedDrop, featuredDrops } from "./featured-drops-data";
+import ProductImage from "./product-images";
 
 const priceFormat = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -273,6 +274,7 @@ export default function FeaturedDrops({
 
   return (
     <section
+      id="featured-drops"
       aria-labelledby={headingId}
       className="relative isolate overflow-hidden bg-[#F5F3EE] pb-14 pt-16 text-[#171715] sm:pb-20 sm:pt-20"
     >
@@ -344,12 +346,10 @@ export default function FeaturedDrops({
                     transition={{ duration: reduceMotion ? 0 : 0.65, ease: [0.22, 0.61, 0.36, 1] }}
                     className="relative h-full w-full"
                   >
-                    <Image
-                      src={drop.image}
+                    <ProductImage
+                      product={drop}
                       alt={drop.name}
-                      fill
                       sizes="(max-width: 639px) 70vw, (max-width: 1023px) 53vw, 38vw"
-                      draggable={false}
                       className="pointer-events-none scale-125 object-contain p-3 drop-shadow-[0_12px_10px_rgba(0,0,0,0.1)] sm:p-0"
                     />
                   </motion.div>
@@ -390,10 +390,10 @@ export default function FeaturedDrops({
               }
               className="-mr-2 -mt-2 flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/5 focus-visible:outline-2 motion-reduce:transition-none"
             >
-              <Heart
+              <HeartIcon
+                size={18}
                 aria-hidden="true"
-                className={cn("size-[18px]", wishlist.has(product.id) && "fill-current")}
-                strokeWidth={1.5}
+                className={cn("size-[18px]", wishlist.has(product.id) && "[&_svg]:fill-current")}
               />
             </button>
           </div>

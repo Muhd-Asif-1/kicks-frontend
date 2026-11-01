@@ -1,11 +1,11 @@
 "use client";
 
-import { Heart } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { HeartIcon } from "@/components/ui/heart";
 import { cn } from "@/lib/utils";
 import type { CollectionProduct } from "./collection-data";
+import ProductImage from "./product-images";
 
 const priceFormat = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -24,10 +24,8 @@ export default function ProductCard({ product }: { product: CollectionProduct })
         className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171715]"
       >
         <div className="relative aspect-[4/5] overflow-hidden bg-[#ECE9E2]">
-          <Image
-            src={product.image}
-            alt=""
-            fill
+          <ProductImage
+            product={product}
             sizes="(max-width: 1023px) 50vw, 25vw"
             className="object-contain motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-105 motion-safe:group-focus-visible:scale-105"
           />
@@ -47,10 +45,10 @@ export default function ProductCard({ product }: { product: CollectionProduct })
         onClick={() => setSaved((previous) => !previous)}
         className="absolute top-1 right-1 flex size-11 items-center justify-center rounded-full transition-colors hover:text-[#171715]/55 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none sm:top-2 sm:right-2"
       >
-        <Heart
+        <HeartIcon
           aria-hidden="true"
-          className={cn("size-[18px]", saved && "fill-current")}
-          strokeWidth={1.5}
+          size={18}
+          className={cn("size-[18px]", saved && "[&_svg]:fill-current")}
         />
       </button>
     </article>
