@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CartIcon } from "@/components/ui/cart";
-import { HeartIcon } from "@/components/ui/heart";
 import { MenuIcon } from "@/components/ui/menu";
 import { SearchIcon } from "@/components/ui/search";
 import { UserIcon } from "@/components/ui/user";
@@ -12,6 +10,7 @@ import { XIcon } from "@/components/ui/x";
 import { cn } from "@/lib/utils";
 
 const Header = () => {
+  const menuButton = useRef<HTMLButtonElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -33,6 +32,18 @@ const Header = () => {
     return () => window.removeEventListener("scroll", updateScrollState);
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuButton.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [menuOpen]);
+
   return (
     <header
       data-solid={isScrolled || menuOpen}
@@ -41,37 +52,28 @@ const Header = () => {
         isScrolled || menuOpen ? "text-black" : "bg-transparent text-white shadow-none",
       )}
     >
-      <button
-        type="button"
-        aria-label={menuOpen ? "Close menu" : "Open menu"}
-        aria-expanded={menuOpen}
-        aria-controls="header-navigation"
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="flex size-11 items-center justify-center focus-visible:outline-2"
-      >
-        {menuOpen ? (
-          <XIcon aria-hidden="true" size={22} />
-        ) : (
-          <MenuIcon aria-hidden="true" size={22} />
-        )}
-      </button>
       <Link
         href="/"
         aria-label="Kicks home"
-        className="absolute left-1/2 h-16 w-28 -translate-x-1/2 sm:h-18 sm:w-36"
+        className="header-brand relative h-16 w-28 shrink-0 sm:h-18 sm:w-36"
       >
-        <Image
-          src="/logo-black.png"
-          alt="Kicks Logo"
-          fill
-          sizes="144px"
-          className={cn(
-            "transition-[filter] duration-300 motion-reduce:transition-none",
-            !isScrolled && !menuOpen && "invert",
-          )}
-        />
+        <span className="kicks-header-logo header-wordmark" aria-hidden="true">
+          KICKS<sup>®</sup>
+        </span>
       </Link>
-      <nav aria-label="Account and shopping" className="flex items-center sm:gap-2">
+      <nav aria-label="Main" className="header-desktop-nav">
+        {[
+          ["Shop", "/collections"],
+          ["Collections", "/collections"],
+          ["New Drops", "/#featured-drops"],
+          ["About", "/about"],
+        ].map(([label, href]) => (
+          <Link key={label} href={href} prefetch={false}>
+            {label}
+          </Link>
+        ))}
+      </nav>
+      <nav aria-label="Account and shopping" className="header-shopping flex items-center sm:gap-2">
         <Link
           href="/search"
           aria-label="Search"
@@ -87,13 +89,6 @@ const Header = () => {
           <UserIcon aria-hidden="true" size={22} />
         </Link>
         <Link
-          href="/wishlist"
-          aria-label="Wishlist"
-          className="hidden size-11 items-center justify-center sm:flex"
-        >
-          <HeartIcon aria-hidden="true" size={22} />
-        </Link>
-        <Link
           href="/cart"
           aria-label="Shopping cart"
           className="flex size-11 items-center justify-center"
@@ -101,17 +96,32 @@ const Header = () => {
           <CartIcon aria-hidden="true" size={22} />
         </Link>
       </nav>
+      <button
+        type="button"
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
+        aria-controls="header-navigation"
+        onClick={() => setMenuOpen(!menuOpen)}
+        ref={menuButton}
+        className="header-menu flex size-11 items-center justify-center focus-visible:outline-2"
+      >
+        {menuOpen ? (
+          <XIcon aria-hidden="true" size={22} />
+        ) : (
+          <MenuIcon aria-hidden="true" size={22} />
+        )}
+      </button>
       {menuOpen && (
         <nav
           id="header-navigation"
           aria-label="Main navigation"
-          onKeyDown={(event) => {
-            if (event.key === "Escape") setMenuOpen(false);
-          }}
           className="absolute inset-x-4 top-full mt-2 flex flex-col gap-1 rounded-2xl bg-[#F5F3EE] p-5 text-sm text-black shadow-lg sm:inset-x-8"
         >
           {[
-            ["Featured drops", "/#featured-drops"],
+            ["Shop", "/collections"],
+            ["Collections", "/collections"],
+            ["New Drops", "/#featured-drops"],
+            ["About", "/about"],
             ["Men", "/collections/men"],
             ["Women", "/collections/women"],
             ["Search", "/search"],

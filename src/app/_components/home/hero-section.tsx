@@ -1,72 +1,176 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
-import Image, { type ImageProps } from "next/image";
+import { ArrowRight, Mouse, Play } from "lucide-react";
 import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { HeroProductInfo, HeroProductStage, SneakerSelector } from "./hero-product-stage";
+import { heroProducts } from "./hero-products";
+import { useHeroAnimations } from "./use-hero-animations";
+import "./hero.css";
 
-type HeroSectionProps = {
-  collectionHref: string;
-  imageSrc?: ImageProps["src"];
-};
+// Failed decodes are evicted so selecting again retries. No network work during SSR.
+const decodedImages = new Map<number, Promise<void>>();
+function warmImage(index: number) {
+  let pending = decodedImages.get(index);
+  if (!pending) {
+    const image = new window.Image();
+    image.src = heroProducts[index].image;
+    pending = image.decode().catch((error: unknown) => {
+      decodedImages.delete(index);
+      throw error;
+    });
+    decodedImages.set(index, pending);
+  }
+  return pending;
+}
 
-export default function HeroSection({
-  collectionHref,
-  // Temporary photograph; replace this file or pass the final campaign image.
-  // Source: https://images.unsplash.com/photo-1549298916-b41d501d3772
-  imageSrc = "/images/home-campaign.jpg",
-}: HeroSectionProps) {
-  const shouldReduceMotion = useReducedMotion();
+export default function HeroSection() {
+  const root = useRef<HTMLElement>(null);
+  const [current, setCurrent] = useState(0);
+  const [desired, setDesired] = useState(0);
+  const [incoming, setIncoming] = useState<number | null>(null);
+  const [error, setError] = useState("");
+  const product = heroProducts[current];
+  const nextProduct = incoming === null ? null : heroProducts[incoming];
+  const complete = useCallback((index: number) => {
+    setCurrent(index);
+    setIncoming(null);
+  }, []);
+  useHeroAnimations(root, current, incoming, complete);
+
+  useEffect(() => {
+    if (desired === current || incoming !== null) return;
+    let cancelled = false;
+    void warmImage(desired)
+      .then(() => {
+        if (!cancelled) setIncoming(desired);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setError("This colorway could not load. Please try again.");
+          setDesired(current);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [desired, current, incoming]);
+
+  useEffect(() => {
+    const connection = (
+      navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }
+    ).connection;
+    if (connection?.saveData || connection?.effectiveType?.includes("2g")) return;
+    const timeout = window.setTimeout(() => {
+      if (!document.hidden) for (const index of [1, 2]) void warmImage(index).catch(() => {});
+    }, 2400);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   return (
-    <section className="relative isolate flex min-h-dvh w-full flex-none items-end overflow-hidden bg-[#171715] text-[#f4f0e8]">
-      <motion.div
-        className="absolute inset-0 -z-20"
-        initial={false}
-        animate={{ scale: shouldReduceMotion ? 1 : [1.045, 1] }}
-        transition={{ duration: shouldReduceMotion ? 0 : 1.8, ease: [0.2, 0.65, 0.3, 1] }}
-      >
-        <Image
-          src={imageSrc}
-          alt=""
-          fill
-          sizes="100vw"
-          preload
-          className="object-cover object-[62%_center] sm:object-[center_60%]"
-        />
-      </motion.div>
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(12,12,10,0.76)_0%,rgba(12,12,10,0.42)_48%,rgba(12,12,10,0.06)_100%),linear-gradient(0deg,rgba(12,12,10,0.55)_0%,transparent_70%)] max-sm:bg-[linear-gradient(0deg,rgba(12,12,10,0.88)_0%,rgba(12,12,10,0.48)_65%,rgba(12,12,10,0.12)_100%)]"
-      />
-
-      <div className="w-full px-6 py-12 sm:px-10 sm:py-14 lg:px-16 lg:py-16 xl:px-20">
-        <div className="max-w-2xl">
-          <p className="mb-6 text-[10px] font-medium tracking-[0.24em] sm:mb-7 sm:text-xs sm:tracking-[0.28em]">
-            THE NEW STANDARD OF EVERYDAY
-          </p>
-          <h1 className="text-[clamp(2.5rem,10.5vw,4rem)] leading-[0.94] font-semibold tracking-[-0.055em] sm:text-[4.5rem] lg:text-[5.5rem]">
-            <span className="block">STEP INTO</span>
-            <span className="block">SOMETHING</span>
-            <span className="block">DIFFERENT.</span>
-          </h1>
-          <p className="mt-6 max-w-[21rem] text-sm leading-relaxed text-[#f4f0e8]/85 sm:mt-7 sm:max-w-sm sm:text-base">
-            Discover sneakers that move with your style. Curated for those who never settle.
-          </p>
-          <Link
-            href={collectionHref}
-            prefetch={false}
-            className="group mt-8 inline-flex min-h-14 items-center justify-center gap-8 bg-[#f4f0e8] px-6 py-4 text-[11px] font-semibold tracking-[0.16em] text-[#171715] transition-colors duration-300 hover:bg-[#ded7ca] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f4f0e8] motion-reduce:transition-none sm:mt-9 sm:gap-10 sm:px-7"
-          >
-            EXPLORE COLLECTION
-            <ArrowUpRight
-              aria-hidden="true"
-              className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none"
-              strokeWidth={1.5}
-            />
-          </Link>
+    <section
+      ref={root}
+      className="kicks-hero"
+      aria-labelledby="hero-heading"
+      data-colorway={product.id}
+    >
+      <div className="hero-surfaces" aria-hidden="true">
+        <div className="hero-dark-panel" />
+        <div className="hero-word-clip hero-word-light">
+          <div className="hero-word-scroll">
+            <div className="hero-word-pointer">
+              <span className="hero-word hero-word-solid">KICKS</span>
+            </div>
+          </div>
+        </div>
+        <div className="hero-word-clip hero-word-dark">
+          <div className="hero-word-scroll">
+            <div className="hero-word-pointer">
+              <span className="hero-word hero-word-outline">KICKS</span>
+            </div>
+          </div>
+        </div>
+        <div className="hero-accent-scroll">
+          <div className="hero-accent-pointer">
+            <div className="hero-accent" />
+          </div>
         </div>
       </div>
+      <div className="hero-copy">
+        <p className="hero-eyebrow">
+          NEW DROP <span />
+        </p>
+        <h1 id="hero-heading">
+          <span className="hero-line">
+            <span>NEVER</span>
+          </span>
+          <span className="hero-line">
+            <span>
+              BLEND IN<span className="hero-period">.</span>
+            </span>
+          </span>
+        </h1>
+        <div className="hero-description-scroll">
+          <p className="hero-description">
+            Iconic sneakers. Timeless style.
+            <br />
+            Built for those who move different.
+          </p>
+        </div>
+        <div className="hero-actions">
+          <Link className="hero-primary" href="/#featured-drops">
+            Explore the Drop <ArrowRight size={22} aria-hidden="true" />
+          </Link>
+          <button
+            className="hero-campaign"
+            type="button"
+            disabled
+            aria-describedby="campaign-unavailable"
+          >
+            <span>
+              <Play size={16} fill="currentColor" aria-hidden="true" />
+            </span>
+            Watch Campaign
+          </button>
+          <span id="campaign-unavailable" className="sr-only">
+            Campaign video is not available yet.
+          </span>
+        </div>
+      </div>
+      <HeroProductStage current={product} incoming={nextProduct} />
+      <div className="hero-featured">
+        <p className="hero-featured-label">FEATURED</p>
+        <div className="hero-info-mask">
+          <HeroProductInfo product={product} slot="current" />
+          {nextProduct && <HeroProductInfo product={nextProduct} slot="incoming" />}
+        </div>
+        <div className="hero-progress" aria-hidden="true">
+          {heroProducts.map((item, index) => (
+            <span key={item.id} data-active={(incoming ?? current) === index} />
+          ))}
+        </div>
+      </div>
+      <SneakerSelector
+        active={incoming ?? current}
+        onSelect={(index) => {
+          setError("");
+          setDesired(index);
+        }}
+        onWarm={(index) => {
+          void warmImage(index).catch(() => {});
+        }}
+      />
+      <Link href="/#featured-drops" className="hero-scroll">
+        <Mouse size={25} strokeWidth={1.2} aria-hidden="true" />
+        <span>
+          SCROLL
+          <br />
+          TO EXPLORE
+        </span>
+      </Link>
+      <output className={error ? "hero-error" : "sr-only"} aria-live="polite" aria-atomic="true">
+        {error || `${product.name}, ${product.colorway}, $${product.price}`}
+      </output>
     </section>
   );
 }

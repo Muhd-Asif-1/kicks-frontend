@@ -218,6 +218,16 @@
 .kicks-header[data-solid="true"]::before {
   opacity: 1;
 }
+/* The server-rendered page marker keeps the ivory 404 header legible before hydration. */
+body:has(main[data-page="not-found"]:not([style*="display: none"])) .kicks-header {
+  color: #171715;
+}
+body:has(main[data-page="not-found"]:not([style*="display: none"])) .kicks-header::before {
+  opacity: 1;
+}
+body:has(main[data-page="not-found"]:not([style*="display: none"])) .kicks-header-logo {
+  filter: none;
+}
 .reel-dialog::backdrop {
   background: rgb(0 0 0 / 82%);
   backdrop-filter: blur(10px);
@@ -231,5 +241,109 @@
   .preloader-line::after {
     animation: none;
     width: 100%;
+  }
+}
+
+/* Shared navigation; homepage colors follow the hero's two surfaces. */
+.kicks-header {
+  padding-inline: 4.7%;
+}
+.header-brand {
+  order: 0;
+}
+.header-desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(22px, 4vw, 64px);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 15px;
+  font-weight: 500;
+}
+.header-desktop-nav a {
+  position: relative;
+  padding-block: 12px;
+}
+.header-desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 7px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+.header-desktop-nav a:hover::after {
+  transform: scaleX(1);
+}
+.header-shopping {
+  order: 2;
+  margin-left: auto;
+}
+.header-menu {
+  order: 3;
+  margin-left: 8px;
+}
+@media (min-width: 768px) {
+  .header-menu {
+    width: 32px;
+  }
+}
+@media (max-width: 767px) {
+  .kicks-header {
+    padding-inline: 22px;
+  }
+  .header-desktop-nav {
+    display: none;
+  }
+  .header-menu {
+    order: 1;
+    margin-left: auto;
+  }
+  .header-shopping {
+    margin-left: 4px;
+  }
+  .header-shopping a:not(:last-child) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .header-desktop-nav a::after {
+    transition: none;
+  }
+}
+
+.header-wordmark {
+  display: inline-block;
+  font-family: var(--font-hero), sans-serif;
+  font-size: 44px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  transform: scaleX(1.3);
+  transform-origin: left center;
+}
+.header-wordmark sup {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 9px;
+  font-style: normal;
+  vertical-align: top;
+  margin-left: 4px;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header-shopping a:not(:last-child) {
+    display: none;
+  }
+  .header-desktop-nav {
+    gap: 22px;
+    font-size: 13px;
   }
 }

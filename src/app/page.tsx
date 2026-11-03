@@ -9,7 +9,7 @@ import { womensCollection } from "./_components/home/womens-collection-data";
 export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col">
-      <HeroSection collectionHref="/collections" />
+      <HeroSection />
       <FeaturedDrops />
       <CollectionSection collection={mensCollection} />
       <CollectionSection

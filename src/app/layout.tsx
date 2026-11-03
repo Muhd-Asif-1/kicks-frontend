@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Barlow_Condensed, Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Footer from "./_components/layout/footer";
 import Header from "./_components/layout/header";
 import Preloader from "./_components/layout/preloader";
+
+const heroFont = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: "800",
+  style: "italic",
+  variable: "--font-hero",
+  display: "swap",
+});
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -35,6 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         geistMono.variable,
         "font-sans",
         inter.variable,
+        heroFont.variable,
       )}
     >
       <head>
