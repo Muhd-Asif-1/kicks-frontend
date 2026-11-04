@@ -56,7 +56,8 @@
 }
 .hero-word-solid {
   color: #171717;
-  mask-image: linear-gradient(#000 20%, #0007 92%);
+  opacity: 0.58;
+  mask-image: linear-gradient(#000 15%, #0004 92%);
 }
 .hero-word-outline {
   color: transparent;
@@ -179,7 +180,8 @@
 .hero-stage {
   position: absolute;
   z-index: 2;
-  width: 66%;
+  /* Leave a guard band before the information rail, including animated transforms. */
+  width: min(54%, 1050px);
   left: 20%;
   top: 23%;
   pointer-events: none;
@@ -191,15 +193,18 @@
   position: relative;
 }
 .hero-shoe-angle {
+  aspect-ratio: 5 / 3;
   transform: rotate(-20deg);
 }
 .hero-stage img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
 }
 .hero-shoe-current {
   position: relative;
+  height: 100%;
 }
 .hero-shoe-incoming {
   position: absolute;
@@ -209,13 +214,13 @@
 .hero-shoe-shadow {
   position: absolute;
   z-index: -1;
-  width: 56%;
-  height: 8%;
-  left: 21%;
-  bottom: -11%;
+  width: 50%;
+  height: 6%;
+  left: 24%;
+  bottom: -9%;
   border-radius: 50%;
-  background: #14110f55;
-  filter: blur(17px);
+  background: #14110f2b;
+  filter: blur(24px);
   transform: rotate(-20deg);
 }
 .hero-featured {
@@ -236,10 +241,8 @@
   overflow: hidden;
   padding-bottom: 4px;
 }
-.hero-info-incoming {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
+.hero-product-details-mask {
+  overflow: hidden;
 }
 .hero-product-link {
   display: flex;
@@ -396,13 +399,13 @@ body:has(main:not([style*="display: none"]) .kicks-hero)
     margin-bottom: 25px;
   }
   .hero-stage {
-    width: 72%;
-    left: 24%;
-    top: 22%;
+    width: min(62%, 480px);
+    left: 31%;
+    top: 20%;
   }
   .hero-featured {
-    top: auto;
-    bottom: 18%;
+    top: 64%;
+    bottom: auto;
     right: 5%;
     width: 26%;
   }
@@ -469,8 +472,10 @@ body:has(main:not([style*="display: none"]) .kicks-hero)
     order: 3;
     position: relative;
     inset: auto;
-    width: calc(100% + 44px);
-    margin: 22px -22px 24px;
+    width: 100%;
+    max-width: 600px;
+    align-self: center;
+    margin: 36px 0 clamp(54px, 12vw, 100px);
   }
   .hero-shoe-angle {
     transform: rotate(-18deg);
@@ -611,13 +616,6 @@ body:has(main:not([style*="display: none"]) .kicks-hero)
   --hero-accent: #69a7d1;
 }
 
-@media (min-width: 768px) {
-  body:has(main:not([style*="display: none"]) .kicks-hero)
-    .kicks-header:not([data-solid="true"])
-    .header-menu {
-    color: white;
-  }
-}
 @media (min-width: 768px) and (max-width: 1199px) {
   .hero-word {
     left: 30%;

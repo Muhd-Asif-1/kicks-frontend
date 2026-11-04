@@ -288,8 +288,9 @@ body:has(main[data-page="not-found"]:not([style*="display: none"])) .kicks-heade
   margin-left: 8px;
 }
 @media (min-width: 768px) {
-  .header-menu {
-    width: 32px;
+  .header-menu,
+  #header-navigation {
+    display: none;
   }
 }
 @media (max-width: 767px) {

@@ -3,6 +3,7 @@
 import { ArrowRight, Mouse, Pause, Play } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
+import { priceFormat } from "@/lib/price";
 import { HeroProductInfo, HeroProductStage, SneakerSelector } from "./hero-product-stage";
 import { heroProducts } from "./hero-products";
 import { useHeroAnimations } from "./use-hero-animations";
@@ -27,18 +28,21 @@ function warmImage(index: number) {
 export default function HeroSection() {
   const root = useRef<HTMLElement>(null);
   const [current, setCurrent] = useState(0);
+  const [active, setActive] = useState(0);
   const [desired, setDesired] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [paused, setPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const product = heroProducts[current];
+  const activeProduct = heroProducts[active];
   const nextProduct = incoming === null ? null : heroProducts[incoming];
   const complete = useCallback((index: number) => {
     setCurrent(index);
+    setActive(index);
     setIncoming(null);
   }, []);
-  useHeroAnimations(root, current, incoming, complete);
+  useHeroAnimations(root, current, incoming, setActive, complete);
 
   // Read the latest selection without restarting the two-second clock on every transition.
   const advance = useEffectEvent(() => {
@@ -117,7 +121,7 @@ export default function HeroSection() {
       ref={root}
       className="kicks-hero"
       aria-labelledby="hero-heading"
-      data-colorway={product.id}
+      data-colorway={activeProduct.id}
     >
       <div className="hero-surfaces" aria-hidden="true">
         <div className="hero-dark-panel" />
@@ -182,16 +186,15 @@ export default function HeroSection() {
           </span>
         </div>
       </div>
-      <HeroProductStage current={product} incoming={nextProduct} />
+      <HeroProductStage current={product} incoming={nextProduct} active={activeProduct} />
       <div className="hero-featured">
         <p className="hero-featured-label">FEATURED</p>
         <div className="hero-info-mask">
-          <HeroProductInfo product={product} slot="current" />
-          {nextProduct && <HeroProductInfo product={nextProduct} slot="incoming" />}
+          <HeroProductInfo product={activeProduct} />
         </div>
         <div className="hero-progress">
           {heroProducts.map((item, index) => (
-            <span key={item.id} aria-hidden="true" data-active={(incoming ?? current) === index} />
+            <span key={item.id} aria-hidden="true" data-active={active === index} />
           ))}
           <button
             type="button"
@@ -215,7 +218,7 @@ export default function HeroSection() {
         </div>
       </div>
       <SneakerSelector
-        active={incoming ?? current}
+        active={active}
         onSelect={(index) => {
           setPaused(true);
           setError("");
@@ -238,7 +241,7 @@ export default function HeroSection() {
         aria-live={paused || reduceMotion || error ? "polite" : "off"}
         aria-atomic="true"
       >
-        {error || `${product.name}, ${product.colorway}, $${product.price}`}
+        {error || `${activeProduct.name}, ${activeProduct.colorway}, ${priceFormat.format(activeProduct.price)}`}
       </output>
     </section>
   );

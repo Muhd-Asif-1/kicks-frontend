@@ -3,7 +3,6 @@ export type HeroProduct = {
   name: string;
   colorway: string;
   price: number;
-  currency: "USD";
   image: string;
   thumbnail: string;
   width: number;
@@ -20,17 +19,10 @@ export const heroProducts: readonly HeroProduct[] = [
 ].map((product) => ({
   ...product,
   name: "Air Jordan 1 Retro High OG",
-  price: 180,
-  currency: "USD",
+  price: 14999,
   image: `/images/hero/${product.id}.webp`,
   thumbnail: `/images/hero/${product.id}-thumb.webp`,
   width: product.id === "university-blue" ? 2000 : 1200,
   height: product.id === "university-blue" ? 1200 : 720,
   slug: `air-jordan-1-${product.id}`,
 }));
-
-export const heroPrice = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});

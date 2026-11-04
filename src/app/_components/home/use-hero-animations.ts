@@ -12,6 +12,7 @@ export function useHeroAnimations(
   root: RefObject<HTMLElement | null>,
   current: number,
   incoming: number | null,
+  handoff: (index: number) => void,
   complete: (index: number) => void,
 ) {
   useGSAP(
@@ -191,27 +192,29 @@ export function useHeroAnimations(
       }
       const direction = incoming > current ? 1 : -1;
       const timeline = gsap.timeline({
-        defaults: { duration: 0.75, ease: "power3.inOut" },
+        defaults: { duration: 0.65, ease: "power2.inOut" },
         onComplete: () => complete(incoming),
       });
       timeline
         .to(
           select(".hero-shoe-current"),
-          { x: -35 * direction, y: -12, rotation: -4 * direction, scale: 0.94, opacity: 0 },
+          { x: -12 * direction, y: -4, rotation: -2 * direction, scale: 0.98, opacity: 0 },
           0,
         )
         .fromTo(
           select(".hero-shoe-incoming"),
-          { x: 45 * direction, y: 15, rotation: 5 * direction, scale: 0.94, opacity: 0 },
+          { x: 12 * direction, y: 4, rotation: 2 * direction, scale: 0.98, opacity: 0 },
           { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 },
           0,
         )
-        .to(select(".hero-info-current"), { y: -18, opacity: 0, duration: 0.35 }, 0)
+        // Both shoes have equal visual weight at this point; hand off every product field together.
+        .to(select(".hero-product-details"), { y: -8, opacity: 0.65, duration: 0.12 }, 0.205)
+        .call(() => handoff(incoming), [], 0.325)
         .fromTo(
-          select(".hero-info-incoming"),
-          { y: 22, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.4 },
-          0.25,
+          select(".hero-product-details"),
+          { y: 8, opacity: 0.65 },
+          { y: 0, opacity: 1, duration: 0.18, immediateRender: false },
+          0.325,
         )
         .to(root.current, { "--hero-accent": heroProducts[incoming].accent }, 0);
       const onReduce = () => {
@@ -222,6 +225,6 @@ export function useHeroAnimations(
         reduce.removeEventListener("change", onReduce);
       };
     },
-    { scope: root, dependencies: [incoming, current, complete], revertOnUpdate: true },
+    { scope: root, dependencies: [incoming, current, handoff, complete], revertOnUpdate: true },
   );
 }

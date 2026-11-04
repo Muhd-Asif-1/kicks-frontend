@@ -5,15 +5,10 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { HeartIcon } from "@/components/ui/heart";
+import { priceFormat } from "@/lib/price";
 import { cn } from "@/lib/utils";
 import { type FeaturedDrop, featuredDrops } from "./featured-drops-data";
 import ProductImage from "./product-images";
-
-const priceFormat = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
-  maximumFractionDigits: 0,
-});
 
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 

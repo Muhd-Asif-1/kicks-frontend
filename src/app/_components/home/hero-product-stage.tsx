@@ -1,25 +1,28 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { type HeroProduct, heroPrice, heroProducts } from "./hero-products";
+import { priceFormat } from "@/lib/price";
+import { type HeroProduct, heroProducts } from "./hero-products";
 
 export function HeroProductStage({
   current,
   incoming,
+  active,
 }: {
+  active: HeroProduct;
   current: HeroProduct;
   incoming: HeroProduct | null;
 }) {
   return (
-    <div className="hero-stage">
-      <div className="hero-shoe-scroll">
+    <div className="hero-stage" role="img" aria-label={`${active.name} in ${active.colorway}`}>
+      <div className="hero-shoe-scroll" aria-hidden="true">
         <div className="hero-shoe-pointer">
           <div className="hero-shoe-entrance">
             <div className="hero-shoe-angle">
               <div className="hero-shoe-current">
                 <Image
                   src={current.image}
-                  alt={`${current.name} in ${current.colorway}`}
+                  alt=""
                   width={current.width}
                   height={current.height}
                   unoptimized
@@ -47,19 +50,9 @@ export function HeroProductStage({
   );
 }
 
-export function HeroProductInfo({
-  product,
-  slot,
-}: {
-  product: HeroProduct;
-  slot: "current" | "incoming";
-}) {
+export function HeroProductInfo({ product }: { product: HeroProduct }) {
   return (
-    <div
-      className={`hero-info-${slot}`}
-      aria-hidden={slot === "incoming" || undefined}
-      inert={slot === "incoming" || undefined}
-    >
+    <div className="hero-info-current">
       <Link
         className="hero-product-link"
         href={`/products/${product.slug}`}
@@ -67,9 +60,13 @@ export function HeroProductInfo({
         aria-label={`View ${product.name}, ${product.colorway}`}
       >
         <div>
-          <h2>{product.name}</h2>
-          <p className="hero-colorway">{product.colorway}</p>
-          <p className="hero-price">{heroPrice.format(product.price)}</p>
+          <div className="hero-product-details-mask">
+            <div className="hero-product-details">
+              <h2>{product.name}</h2>
+              <p className="hero-colorway">{product.colorway}</p>
+            </div>
+          </div>
+          <p className="hero-price">{priceFormat.format(product.price)}</p>
         </div>
         <ArrowRight aria-hidden="true" size={30} strokeWidth={1.4} />
       </Link>
