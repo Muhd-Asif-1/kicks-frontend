@@ -180,10 +180,10 @@
 .hero-stage {
   position: absolute;
   z-index: 2;
-  /* Leave a guard band before the information rail, including animated transforms. */
-  width: min(54%, 1050px);
-  left: 20%;
-  top: 23%;
+  /* Restore the campaign scale; cap the rotated shoe against the hero's height. */
+  width: min(72%, 1400px, calc((clamp(760px, 100svh, 1150px) * 0.83 - 32px) / 0.62));
+  right: 18%;
+  top: 17%;
   pointer-events: none;
 }
 .hero-shoe-scroll,
@@ -399,9 +399,10 @@ body:has(main:not([style*="display: none"]) .kicks-hero)
     margin-bottom: 25px;
   }
   .hero-stage {
-    width: min(62%, 480px);
-    left: 31%;
-    top: 20%;
+    width: min(81%, 640px);
+    left: 18%;
+    right: auto;
+    top: 21%;
   }
   .hero-featured {
     top: 64%;
