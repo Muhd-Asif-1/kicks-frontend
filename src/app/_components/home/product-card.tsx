@@ -22,7 +22,7 @@ export default function ProductCard({ product }: { product: CollectionProduct })
           <ProductImage
             product={product}
             sizes="(max-width: 1023px) 50vw, 25vw"
-            className="object-contain motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-105 motion-safe:group-focus-visible:scale-105"
+            className="object-contain motion-safe:group-hover:scale-105 motion-safe:group-focus-visible:scale-105"
           />
         </div>
         <div className="pt-4 sm:pt-5">

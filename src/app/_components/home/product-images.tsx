@@ -4,6 +4,9 @@ import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
+const imageTransition =
+  "[transition:opacity_400ms_ease,transform_500ms_ease] motion-reduce:transition-none";
+
 export type ProductImages = {
   primaryImage: string;
   secondaryImage: string;
@@ -31,7 +34,7 @@ export default function ProductImage({
         fill
         sizes={sizes}
         draggable={false}
-        className={cn("product-primary object-contain", className)}
+        className={cn("product-primary object-contain", imageTransition, className)}
       />
       <Image
         src={product.secondaryImage}
@@ -42,7 +45,7 @@ export default function ProductImage({
         draggable={false}
         onLoad={() => setReady(true)}
         onError={() => setReady(false)}
-        className={cn("product-secondary object-contain opacity-0", className)}
+        className={cn("product-secondary object-contain opacity-0", imageTransition, className)}
       />
     </span>
   );

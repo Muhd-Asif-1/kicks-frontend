@@ -23,9 +23,16 @@ export default function Preloader() {
     };
   }, []);
   return (
-    <output ref={overlay} className="kicks-preloader" aria-label="Loading Kicks">
+    <output
+      ref={overlay}
+      className="kicks-preloader pointer-events-none fixed inset-0 z-100 flex animate-[preloader-fallback_0s_8s_forwards] flex-col items-center justify-center gap-6 bg-[#f5f3ee] [transition:opacity_400ms_ease,visibility_400ms] data-[ready=true]:invisible data-[ready=true]:opacity-0 motion-reduce:transition-none"
+      aria-label="Loading Kicks"
+    >
       <Image src="/logo-black.png" alt="" width={180} height={90} preload />
-      <span className="preloader-line" aria-hidden="true" />
+      <span
+        className="preloader-line h-px w-[100px] overflow-hidden bg-[#17171520] after:block after:h-full after:w-[45%] after:animate-[loading-line_1.2s_ease-in-out_infinite] after:bg-[#171715] after:content-[''] motion-reduce:after:w-full motion-reduce:after:animate-none"
+        aria-hidden="true"
+      />
     </output>
   );
 }

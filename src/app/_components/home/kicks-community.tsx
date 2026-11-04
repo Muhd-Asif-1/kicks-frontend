@@ -85,7 +85,7 @@ function ReelViewer({
       onCancel={onClose}
       onClose={onClose}
       aria-labelledby="reel-title"
-      className="reel-dialog fixed m-auto max-h-[94dvh] w-[min(90vw,430px)] overflow-visible rounded-xl bg-[#171715] p-0 text-white shadow-2xl"
+      className="reel-dialog backdrop:bg-black/[0.82] backdrop:backdrop-blur-[10px] fixed m-auto max-h-[94dvh] w-[min(90vw,430px)] overflow-visible rounded-xl bg-[#171715] p-0 text-white shadow-2xl"
     >
       <div className="flex items-center justify-between gap-4 px-4 py-2">
         <h3 id="reel-title" className="text-xs font-medium">

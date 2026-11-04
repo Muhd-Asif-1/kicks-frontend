@@ -30,7 +30,7 @@ export function useHeroAnimations(
             // Release initial inline values so responsive CSS still owns the resting layout.
             gsap.set(
               select(
-                ".hero-dark-panel,.hero-word,.hero-eyebrow,.hero-line > span,.hero-description,.hero-shoe-entrance,.hero-featured,.hero-selector,.hero-actions,.hero-scroll",
+                ".hero-dark-panel,.hero-word-entrance,.hero-eyebrow,.hero-line > span,.hero-description,.hero-shoe-entrance,.hero-featured,.hero-selector-entrance,.hero-actions,.hero-scroll",
               ),
               { clearProps: "transform,opacity" },
             );
@@ -38,7 +38,7 @@ export function useHeroAnimations(
         });
         entrance
           .from(select(".hero-dark-panel"), { opacity: 0.6, duration: 0.9 }, 0)
-          .from(select(".hero-word"), { y: 35, opacity: 0, duration: 1.1 }, 0)
+          .from(select(".hero-word-entrance"), { y: 35, opacity: 0, duration: 1.1 }, 0)
           .from(select(".hero-eyebrow"), { opacity: 0, y: 12, duration: 0.7 }, 0.1)
           .from(select(".hero-line > span"), { yPercent: 110, duration: 0.85, stagger: 0.1 }, 0.15)
           .from(select(".hero-description"), { y: 15, opacity: 0, duration: 0.7 }, 0.45)
@@ -48,7 +48,11 @@ export function useHeroAnimations(
             0.2,
           )
           .from(select(".hero-featured"), { y: 18, opacity: 0, duration: 0.7 }, 0.7)
-          .from(select(".hero-selector"), { y: 15, opacity: 0, duration: 0.6, stagger: 0.09 }, 0.8)
+          .from(
+            select(".hero-selector-entrance"),
+            { y: 15, opacity: 0, duration: 0.6, stagger: 0.09 },
+            0.8,
+          )
           .from(select(".hero-actions"), { y: 12, opacity: 0, duration: 0.6 }, 0.8)
           .from(select(".hero-scroll"), { opacity: 0, duration: 0.5 }, 1.05);
 

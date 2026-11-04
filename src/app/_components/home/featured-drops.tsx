@@ -271,7 +271,7 @@ export default function FeaturedDrops({
     <section
       id="featured-drops"
       aria-labelledby={headingId}
-      className="relative isolate overflow-hidden bg-[#F5F3EE] pb-14 pt-16 text-[#171715] sm:pb-20 sm:pt-20"
+      className="relative isolate scroll-mt-[90px] overflow-hidden bg-[#F5F3EE] pb-14 pt-16 text-[#171715] sm:pb-20 sm:pt-20"
     >
       <div
         aria-hidden="true"
