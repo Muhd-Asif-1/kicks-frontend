@@ -1,5 +1,8 @@
 "use client";
 
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -9,6 +12,8 @@ import { priceFormat } from "@/lib/price";
 import { cn } from "@/lib/utils";
 import { type FeaturedDrop, featuredDrops } from "./featured-drops-data";
 import ProductImage from "./product-images";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 
@@ -36,6 +41,8 @@ export default function FeaturedDrops({
 }: {
   products?: readonly FeaturedDrop[];
 }) {
+  const hasProducts = products.length > 0;
+  const sectionRef = useRef<HTMLElement>(null);
   const cycleStart = products.length > 1 ? products.length : 0;
   const [activeSlide, setActiveSlide] = useState(cycleStart + Math.min(2, products.length - 1));
   const activeIndex = products.length ? wrapIndex(activeSlide, products.length) : 0;
@@ -51,6 +58,31 @@ export default function FeaturedDrops({
   );
   const headingId = useId();
   const trackId = useId();
+
+  useGSAP(
+    () => {
+      if (!sectionRef.current) return;
+      const media = gsap.matchMedia();
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        // Entrance wrappers leave carousel, pedestal positioning, and Motion transforms alone.
+        gsap
+          .timeline({
+            scrollTrigger: { trigger: sectionRef.current, start: "top 85%", once: true },
+            defaults: { duration: 0.7, ease: "power3.out" },
+          })
+          .from("[data-drop-copy]", { y: 16, opacity: 0, stagger: 0.08 }, 0)
+          .from("[data-drop-description]", { y: 10, opacity: 0 }, 0.12)
+          .from(
+            "[data-drop-showcase]",
+            { y: 20, opacity: 0, clearProps: "transform,opacity" },
+            0.18,
+          )
+          .from("[data-drop-floor]", { opacity: 0 }, 0.18);
+      });
+      return () => media.revert();
+    },
+    { scope: sectionRef, dependencies: [hasProducts], revertOnUpdate: true },
+  );
 
   useEffect(() => {
     const track = trackRef.current;
@@ -269,42 +301,49 @@ export default function FeaturedDrops({
 
   return (
     <section
+      ref={sectionRef}
       id="featured-drops"
       aria-labelledby={headingId}
-      className="relative isolate scroll-mt-[90px] overflow-hidden bg-[#F5F3EE] pb-14 pt-16 text-[#171715] sm:pb-20 sm:pt-20"
+      className="relative isolate scroll-mt-[90px] overflow-hidden bg-[#F0EBE7] pb-14 pt-16 text-[#111111] sm:pb-20 sm:pt-20 [&_:is(a,button):focus-visible]:outline-[#DC2028]"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(rgba(23,23,21,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(23,23,21,0.035)_1px,transparent_1px)] bg-size-[64px_64px] mask-[linear-gradient(transparent,black_35%,transparent_80%)]"
-      />
-      <div
-        aria-hidden="true"
+        data-drop-floor
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[48%] overflow-hidden [perspective:480px]"
       >
-        <div className="absolute -inset-x-1/2 top-0 h-[220%] origin-top bg-[linear-gradient(rgba(23,23,21,0.09)_1px,transparent_1px),linear-gradient(90deg,rgba(23,23,21,0.09)_1px,transparent_1px)] bg-size-[64px_56px] [transform:rotateX(58deg)] mask-[linear-gradient(transparent,black_18%)]" />
+        <div className="absolute -inset-x-1/2 top-0 h-[220%] origin-top bg-[linear-gradient(rgba(17,17,17,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(17,17,17,0.06)_1px,transparent_1px)] bg-size-[64px_56px] [transform:rotateX(58deg)] mask-[linear-gradient(transparent,black_22%,black_70%,transparent)]" />
       </div>
 
       <div className="relative px-6 text-center">
-        <p className="mb-4 text-[10px] font-medium tracking-[0.28em]">THE KICKS EDIT / 001</p>
+        <p className="mb-5 overflow-hidden text-[10px] font-semibold tracking-[0.28em] text-[#686868] sm:mb-6">
+          <span data-drop-copy className="block">
+            THE KICKS EDIT / 002
+          </span>
+        </p>
         <h2
           id={headingId}
-          className="text-4xl font-semibold tracking-[-0.06em] sm:text-6xl lg:text-7xl"
+          className="overflow-hidden [font-family:var(--font-hero),sans-serif] text-4xl leading-none font-extrabold tracking-[-0.025em] italic sm:text-6xl lg:text-7xl"
         >
-          Next in rotation.
+          <span data-drop-copy className="block px-[0.12em] pb-[0.12em]">
+            NEXT IN ROTATION<span className="text-[#DC2028]">.</span>
+          </span>
         </h2>
-        <p className="mt-4 text-sm text-black/55">
+        <p data-drop-description className="mt-4 text-sm leading-relaxed text-[#686868] sm:mt-5">
           A few standouts. An entirely different point of view.
         </p>
       </div>
 
-      <div className="relative mt-5 [--drop-width:56vw] sm:mt-8 sm:[--drop-width:42vw] lg:[--drop-width:30vw]">
+      <div
+        data-drop-showcase
+        className="relative mt-5 [--drop-width:56vw] sm:mt-8 sm:[--drop-width:42vw] lg:[--drop-width:30vw]"
+      >
         <div
           aria-hidden="true"
-          className="absolute bottom-6 left-1/2 h-10 w-[calc(var(--drop-width)*1.3)] max-w-[620px] -translate-x-1/2 rounded-[50%] bg-black/10 blur-xl"
+          className="absolute bottom-6 left-1/2 h-10 w-[calc(var(--drop-width)*1.3)] max-w-[620px] -translate-x-1/2 rounded-[50%] bg-[#111111]/[0.07] blur-xl"
         />
         <div
           aria-hidden="true"
-          className="absolute bottom-10 left-1/2 h-14 w-[calc(var(--drop-width)*1.45)] max-w-[680px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(#fffdf8,#ddd9d0)] shadow-[0_12px_24px_-12px_rgba(0,0,0,0.22)] sm:bottom-8 sm:h-20"
+          className="absolute bottom-10 left-1/2 h-14 w-[calc(var(--drop-width)*1.45)] max-w-[680px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(#f7f3ef,#d9d1ca)] shadow-[0_12px_24px_-12px_rgba(17,17,17,0.14)] sm:bottom-8 sm:h-20"
         />
         <section
           ref={trackRef}
@@ -356,15 +395,17 @@ export default function FeaturedDrops({
       </div>
 
       <div className="relative mx-auto mt-4 max-w-[440px] px-6 sm:mt-6 sm:px-0">
-        <div className="overflow-hidden rounded-2xl bg-[#fffdf9]/95 shadow-[0_12px_48px_-20px_rgba(23,23,21,0.18)]">
+        <div className="overflow-hidden rounded-2xl bg-[#f7f3ef]/95 shadow-[0_12px_48px_-20px_rgba(17,17,17,0.12)]">
           <div className="flex min-h-[126px] items-start justify-between gap-4 p-5 sm:p-6">
             <div aria-live={isPaused || reduceMotion ? "polite" : "off"} aria-atomic="true">
-              <p className="text-[9px] tracking-[0.18em] text-black/45">{product.category}</p>
-              <h3 className="mt-2 text-sm font-medium sm:text-base">{product.name}</h3>
+              <p className="text-[9px] tracking-[0.18em] text-[#686868]">{product.category}</p>
+              <h3 className="mt-2 text-sm font-semibold tracking-[-0.02em] sm:text-base">
+                {product.name}
+              </h3>
               <div className="mt-3 flex items-center gap-3 text-sm">
                 <span>{priceFormat.format(product.price)}</span>
                 {product.originalPrice && (
-                  <del className="text-xs text-black/40">
+                  <del className="text-xs text-[#686868]">
                     <span className="sr-only">Original price </span>
                     {priceFormat.format(product.originalPrice)}
                   </del>
@@ -383,7 +424,7 @@ export default function FeaturedDrops({
                   return next;
                 })
               }
-              className="-mr-2 -mt-2 flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/5 focus-visible:outline-2 motion-reduce:transition-none"
+              className="-mr-2 -mt-2 flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-[#111111]/5 focus-visible:outline-2 aria-pressed:text-[#DC2028] motion-reduce:transition-none"
             >
               <HeartIcon
                 size={18}
@@ -395,19 +436,19 @@ export default function FeaturedDrops({
           <Link
             href={product.href}
             prefetch={false}
-            className="flex min-h-14 items-center justify-center gap-3 bg-[#171715] px-5 text-xs font-medium tracking-[0.12em] text-[#F5F3EE] transition-colors hover:bg-[#35352f] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+            className="flex min-h-14 items-center justify-center gap-3 bg-[#111111] px-5 text-xs font-medium tracking-[0.12em] text-[#F0EBE7] transition-colors hover:bg-[#303030] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
           >
             EXPLORE <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={1.5} />
           </Link>
         </div>
-        <div className="mt-6 flex items-center justify-between text-black/50">
+        <div className="mt-6 flex items-center justify-between text-[#686868]">
           <button
             type="button"
             aria-label="Previous featured product"
             aria-controls={trackId}
             disabled={products.length < 2}
             onClick={() => navigateRef.current(indexRef.current - 1)}
-            className="flex size-11 items-center justify-center rounded-full hover:bg-black/5 focus-visible:outline-2 disabled:opacity-25"
+            className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-[#111111]/5 hover:text-[#111111] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-25 motion-reduce:transition-none"
           >
             <ArrowLeft aria-hidden="true" className="size-4" />
           </button>
@@ -424,12 +465,12 @@ export default function FeaturedDrops({
               aria-pressed={isPaused}
               disabled={!!reduceMotion}
               onClick={() => setIsPaused((paused) => !paused)}
-              className="flex size-11 items-center justify-center rounded-full hover:bg-black/5 focus-visible:outline-2 disabled:opacity-25"
+              className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-[#111111]/5 hover:text-[#111111] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-25 motion-reduce:transition-none"
             >
               {isPaused || reduceMotion ? (
-                <Play aria-hidden="true" className="size-3.5" />
+                <Play aria-hidden="true" className="size-4" />
               ) : (
-                <Pause aria-hidden="true" className="size-3.5" />
+                <Pause aria-hidden="true" className="size-4" />
               )}
             </button>
             <button
@@ -438,13 +479,13 @@ export default function FeaturedDrops({
               aria-controls={trackId}
               disabled={products.length < 2}
               onClick={() => navigateRef.current(indexRef.current + 1)}
-              className="flex size-11 items-center justify-center rounded-full hover:bg-black/5 focus-visible:outline-2 disabled:opacity-25"
+              className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-[#111111]/5 hover:text-[#111111] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-25 motion-reduce:transition-none"
             >
               <ArrowRight aria-hidden="true" className="size-4" />
             </button>
           </div>
         </div>
-        <p className="mt-1 text-center text-[9px] tracking-[0.16em] text-black/35">
+        <p className="mt-1 text-center text-[9px] tracking-[0.16em] text-[#686868]">
           DRAG TO DISCOVER
         </p>
       </div>
