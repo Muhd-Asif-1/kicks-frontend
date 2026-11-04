@@ -266,6 +266,7 @@
 }
 .hero-progress {
   display: flex;
+  align-items: center;
   gap: 13px;
   margin-top: 34px;
 }
@@ -278,6 +279,22 @@
 }
 .hero-progress span[data-active="true"] {
   background: white;
+}
+.hero-autoplay {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-block: -20px;
+  color: #b0ada9;
+  cursor: pointer;
+}
+.hero-autoplay:hover {
+  color: white;
+}
+.hero-autoplay:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 .hero-selectors {
   display: flex;

@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowRight, Mouse, Play } from "lucide-react";
+import { ArrowRight, Mouse, Pause, Play } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
 import { HeroProductInfo, HeroProductStage, SneakerSelector } from "./hero-product-stage";
 import { heroProducts } from "./hero-products";
 import { useHeroAnimations } from "./use-hero-animations";
@@ -30,6 +30,8 @@ export default function HeroSection() {
   const [desired, setDesired] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [paused, setPaused] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const product = heroProducts[current];
   const nextProduct = incoming === null ? null : heroProducts[incoming];
   const complete = useCallback((index: number) => {
@@ -37,6 +39,48 @@ export default function HeroSection() {
     setIncoming(null);
   }, []);
   useHeroAnimations(root, current, incoming, complete);
+
+  // Read the latest selection without restarting the two-second clock on every transition.
+  const advance = useEffectEvent(() => {
+    if (
+      paused ||
+      reduceMotion ||
+      error ||
+      document.hidden ||
+      incoming !== null ||
+      desired !== current ||
+      root.current?.querySelector(
+        ".hero-selector:hover, .hero-product-link:hover, .hero-selector:focus, .hero-product-link:focus",
+      )
+    )
+      return;
+    setDesired((current + 1) % heroProducts.length);
+  });
+
+  useEffect(() => {
+    const element = root.current;
+    if (!element) return;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotion = () => setReduceMotion(motion.matches);
+    updateMotion();
+    motion.addEventListener("change", updateMotion);
+    let visible = false;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting && entry.intersectionRatio >= 0.3;
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(element);
+    const timer = window.setInterval(() => {
+      if (visible && !motion.matches) advance();
+    }, 2000);
+    return () => {
+      window.clearInterval(timer);
+      observer.disconnect();
+      motion.removeEventListener("change", updateMotion);
+    };
+  }, []);
 
   useEffect(() => {
     if (desired === current || incoming !== null) return;
@@ -48,6 +92,7 @@ export default function HeroSection() {
       .catch(() => {
         if (!cancelled) {
           setError("This colorway could not load. Please try again.");
+          setPaused(true);
           setDesired(current);
         }
       });
@@ -144,15 +189,35 @@ export default function HeroSection() {
           <HeroProductInfo product={product} slot="current" />
           {nextProduct && <HeroProductInfo product={nextProduct} slot="incoming" />}
         </div>
-        <div className="hero-progress" aria-hidden="true">
+        <div className="hero-progress">
           {heroProducts.map((item, index) => (
-            <span key={item.id} data-active={(incoming ?? current) === index} />
+            <span key={item.id} aria-hidden="true" data-active={(incoming ?? current) === index} />
           ))}
+          <button
+            type="button"
+            className="hero-autoplay"
+            disabled={reduceMotion}
+            aria-label={
+              reduceMotion
+                ? "Automatic shoe rotation disabled for reduced motion"
+                : paused
+                  ? "Play automatic shoe rotation"
+                  : "Pause automatic shoe rotation"
+            }
+            onClick={() => setPaused((value) => !value)}
+          >
+            {paused || reduceMotion ? (
+              <Play size={13} aria-hidden="true" />
+            ) : (
+              <Pause size={13} aria-hidden="true" />
+            )}
+          </button>
         </div>
       </div>
       <SneakerSelector
         active={incoming ?? current}
         onSelect={(index) => {
+          setPaused(true);
           setError("");
           setDesired(index);
         }}
@@ -168,7 +233,11 @@ export default function HeroSection() {
           TO EXPLORE
         </span>
       </Link>
-      <output className={error ? "hero-error" : "sr-only"} aria-live="polite" aria-atomic="true">
+      <output
+        className={error ? "hero-error" : "sr-only"}
+        aria-live={paused || reduceMotion || error ? "polite" : "off"}
+        aria-atomic="true"
+      >
         {error || `${product.name}, ${product.colorway}, $${product.price}`}
       </output>
     </section>
